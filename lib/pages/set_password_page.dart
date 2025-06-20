@@ -23,8 +23,8 @@ class _SetPasswordPageState extends State<SetPasswordPage> {
     String confirm = _confirmController.text.trim();
 
     if (password.isNotEmpty && confirm.isNotEmpty) {
-      final String url = 'http://localhost:8000/api/set-password'; // Ganti sesuai URL backend-mu
-
+      // final String url = 'http://localhost:8000/api/set-password'; // Ganti sesuai URL backend-mu
+      final String url = 'https://backend_x.is-web.my.id/api/set-password'; 
       final response = await http.post(
         Uri.parse(url),
         headers: {'Accept': 'application/json'},

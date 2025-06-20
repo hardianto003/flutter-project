@@ -19,8 +19,8 @@ class _VerifyOTPPageState extends State<VerifyOTPPage> {
   Future<void> verifyOTP() async {
     String otp = _otpController.text.trim();
     if (otp.isNotEmpty) {
-      final String url = 'http://localhost:8000/api/verify-code'; // Ganti sesuai URL backend Laravel-mu
-
+      // final String url = 'http://localhost:8000/api/verify-code'
+      final String url = 'https://backend_x.is-web.my.id/api/verify-code'; 
       final response = await http.post(
         Uri.parse(url),
         headers: {'Accept': 'application/json'},
