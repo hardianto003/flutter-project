@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'dart:convert';  // Untuk menggunakan json.decode
+import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'set_password_page.dart'; // Pastikan SetPasswordPage sudah diimpor
+import 'set_password_page.dart';
 
 class VerifyOTPPage extends StatefulWidget {
   final String email;
@@ -14,26 +14,29 @@ class VerifyOTPPage extends StatefulWidget {
 
 class _VerifyOTPPageState extends State<VerifyOTPPage> {
   final TextEditingController _otpController = TextEditingController();
-  String? _errorMessage; // Definisikan _errorMessage
+  String? _errorMessage;
 
-  // Fungsi untuk memverifikasi OTP
   Future<void> verifyOTP() async {
     String otp = _otpController.text.trim();
     if (otp.isNotEmpty) {
-      final String url = 'http://localhost:8080//verifyOTP.php'; // Gantilah dengan URL PHP Anda
+      final String url = 'http://localhost:8000/api/verify-code'; // Ganti sesuai URL backend Laravel-mu
 
       final response = await http.post(
         Uri.parse(url),
-        body: {'otp': otp, 'email': widget.email}, // Kirimkan OTP dan email ke backend
+        headers: {'Accept': 'application/json'},
+        body: {'code': otp, 'email': widget.email},
       );
 
       if (response.statusCode == 200) {
         final responseBody = json.decode(response.body);
-        if (responseBody['message'] == 'OTP Verified. Please set your password') {
+        if (responseBody['message'] != null) {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => SetPasswordPage(email: widget.email),
+              builder: (context) => SetPasswordPage(
+                email: widget.email,
+                code: otp, // Kirim kode ke halaman set password
+              ),
             ),
           );
         } else {
@@ -54,30 +57,78 @@ class _VerifyOTPPageState extends State<VerifyOTPPage> {
     return Scaffold(
       backgroundColor: Colors.black,
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text('Enter OTP sent to your email', style: TextStyle(color: Colors.white)),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 50),
-              child: TextField(
-                controller: _otpController,
-                style: TextStyle(color: Colors.white),
-                decoration: InputDecoration(
-                  labelText: 'OTP',
-                  labelStyle: TextStyle(color: Colors.white),
-                  filled: true,
-                  fillColor: Colors.grey[800],
+        child: SingleChildScrollView(
+          child: Card(
+            color: Colors.grey[900],
+            elevation: 8,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: 350),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'Enter OTP sent to your email',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    TextField(
+                      controller: _otpController,
+                      style: TextStyle(color: Colors.white, letterSpacing: 4),
+                      keyboardType: TextInputType.number,
+                      textAlign: TextAlign.center,
+                      maxLength: 6,
+                      decoration: InputDecoration(
+                        labelText: 'OTP',
+                        labelStyle: TextStyle(color: Colors.white70),
+                        filled: true,
+                        fillColor: Colors.grey[850],
+                        counterText: '',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.blueAccent),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: verifyOTP,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blueAccent,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                        ),
+                        child: Text('Verify OTP'),
+                      ),
+                    ),
+                    if (_errorMessage != null)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 16.0),
+                        child: Text(
+                          _errorMessage!,
+                          style: TextStyle(color: Colors.redAccent),
+                        ),
+                      ),
+                  ],
                 ),
               ),
             ),
-            ElevatedButton(
-              onPressed: verifyOTP,
-              child: Text('Verify OTP'),
-            ),
-            if (_errorMessage != null)
-              Text(_errorMessage!, style: TextStyle(color: Colors.red)), // Tampilkan pesan error jika ada
-          ],
+          ),
         ),
       ),
     );

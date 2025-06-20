@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart'; // sudah ada
 import 'package:image_picker/image_picker.dart';
 
 final String baseUrl = 'https://backend_x.is-web.my.id/api/';
+// final String baseUrl = 'http://localhost:8000/api/';
 
 class ApiService {
   // Fungsi untuk registrasi
@@ -12,8 +13,6 @@ class ApiService {
     String username,
     String fullName,
     String email,
-    String password,
-    String confirmPassword,
     String birthDate,
   ) async {
     final response = await http.post(
@@ -25,8 +24,6 @@ class ApiService {
       body: json.encode({
         'name': username,
         'email': email,
-        'password': password,
-        'password_confirmation': confirmPassword,
         'full_name': fullName,
         'birth_date': birthDate, // Menambahkan tanggal lahir
       }),

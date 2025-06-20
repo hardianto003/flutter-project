@@ -2,6 +2,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:x/pages/login_page.dart';
+import 'package:x/pages/set_password_page.dart';
 import '../services/api_service.dart'; // Impor dari api_service
 import 'verify_otp_page.dart';
 
@@ -16,8 +17,6 @@ class _RegisterPageState extends State<RegisterPage> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _fullNameController = TextEditingController();
-  final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
 
   // Dropdown values for Date of Birth
   String? _selectedMonth;
@@ -32,8 +31,6 @@ class _RegisterPageState extends State<RegisterPage> {
     _nameController.dispose();
     _emailController.dispose();
     _fullNameController.dispose();
-    _passwordController.dispose();
-    _confirmPasswordController.dispose();
     super.dispose();
   }
 
@@ -67,18 +64,7 @@ class _RegisterPageState extends State<RegisterPage> {
       setState(() => _errorMessage = "Email is required");
       return;
     }
-    if (_passwordController.text.isEmpty) {
-      setState(() => _errorMessage = "Password is required");
-      return;
-    }
-    if (_confirmPasswordController.text.isEmpty) {
-      setState(() => _errorMessage = "Confirm password is required");
-      return;
-    }
-    if (_passwordController.text != _confirmPasswordController.text) {
-      setState(() => _errorMessage = "Passwords do not match");
-      return;
-    }
+
     if (birthDate == null) {
       setState(() => _errorMessage = "Date of birth is required");
       return;
@@ -95,8 +81,6 @@ class _RegisterPageState extends State<RegisterPage> {
         _nameController.text.trim(),
         _fullNameController.text.trim(),
         email,
-        _passwordController.text.trim(),
-        _confirmPasswordController.text.trim(),
         birthDate, // Pastikan ApiService menerima fullName
       );
 
@@ -108,11 +92,13 @@ class _RegisterPageState extends State<RegisterPage> {
             duration: Duration(seconds: 2),
           ),
         );
-        // alihkan ke halama login
+        // alihkan ke halama setpassword
         Future.delayed(const Duration(seconds: 2), () {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => LoginPage()),
+            MaterialPageRoute(
+              builder: (context) => VerifyOTPPage(email: email),
+            ),
           );
         });
         // sendOTP(email);
@@ -369,108 +355,6 @@ class _RegisterPageState extends State<RegisterPage> {
                               ),
                             ),
                             SizedBox(height: 24),
-                            // Input Password
-                            Container(
-                              height: 56,
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  color:
-                                      _passwordController.text.isNotEmpty
-                                          ? Color(0xFF1D9BF0)
-                                          : Color(0xFF333639),
-                                  width:
-                                      _passwordController.text.isNotEmpty
-                                          ? 2
-                                          : 1,
-                                ),
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                              child: TextField(
-                                controller: _passwordController,
-                                obscureText: true,
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                                onChanged: (value) {
-                                  setState(() {
-                                    _errorMessage = null;
-                                  });
-                                },
-                                decoration: InputDecoration(
-                                  labelText: 'Password',
-                                  labelStyle: TextStyle(
-                                    color:
-                                        _passwordController.text.isNotEmpty
-                                            ? Color(0xFF1D9BF0)
-                                            : Color(0xFF71767B),
-                                    fontSize: 17,
-                                    fontWeight: FontWeight.w400,
-                                  ),
-                                  border: InputBorder.none,
-                                  contentPadding: EdgeInsets.fromLTRB(
-                                    12,
-                                    16,
-                                    12,
-                                    8,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            SizedBox(height: 24),
-                            // Input Confirm Password
-                            Container(
-                              height: 56,
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  color:
-                                      _confirmPasswordController.text.isNotEmpty
-                                          ? Color(0xFF1D9BF0)
-                                          : Color(0xFF333639),
-                                  width:
-                                      _confirmPasswordController.text.isNotEmpty
-                                          ? 2
-                                          : 1,
-                                ),
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                              child: TextField(
-                                controller: _confirmPasswordController,
-                                obscureText: true,
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                                onChanged: (value) {
-                                  setState(() {
-                                    _errorMessage = null;
-                                  });
-                                },
-                                decoration: InputDecoration(
-                                  labelText: 'Confirm Password',
-                                  labelStyle: TextStyle(
-                                    color:
-                                        _confirmPasswordController
-                                                .text
-                                                .isNotEmpty
-                                            ? Color(0xFF1D9BF0)
-                                            : Color(0xFF71767B),
-                                    fontSize: 17,
-                                    fontWeight: FontWeight.w400,
-                                  ),
-                                  border: InputBorder.none,
-                                  contentPadding: EdgeInsets.fromLTRB(
-                                    12,
-                                    16,
-                                    12,
-                                    8,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            SizedBox(height: 32),
                             // Date of Birth section
                             Text(
                               'Date of birth',
